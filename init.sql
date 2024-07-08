@@ -1,4 +1,4 @@
--- init.mysql
+-- Drop and recreate the database
 DROP DATABASE IF EXISTS my_database;
 CREATE DATABASE my_database;
 USE my_database;
