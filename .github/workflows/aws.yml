@@ -68,6 +68,6 @@ jobs:
 
     - name: Clean up old images
       run: |
-        ssh -o StrictHostKeyChecking=no $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
-          docker image prune -f
+        ssh -o StrictHostKeyChecking=no -t $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
+          sudo docker image prune -f
         EOF
