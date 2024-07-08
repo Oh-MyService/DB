@@ -65,10 +65,9 @@ jobs:
           sudo docker stop mysql_container || true
           sudo docker rm mysql_container || true
           sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -v mysql_data:/var/lib/mysql -p 21212:3306 \$IMAGE
-          # init.sql 파일을 컨테이너 내부로 복사하고 실행
           sleep 10  # 컨테이너가 시작될 시간을 줌
           sudo docker cp /home/$SSH_USERNAME/init.sql mysql_container:/docker-entrypoint-initdb.d/
-          sudo docker exec -i mysql_container mysql -uroot -proot mydb < /docker-entrypoint-initdb.d/init.sql
+          sudo docker exec -i mysql_container sh -c 'exec mysql -uroot -proot mydb < /docker-entrypoint-initdb.d/init.sql'
         EOF
 
     - name: Clean up old images
