@@ -63,7 +63,7 @@ jobs:
           sudo docker pull \$IMAGE
           sudo docker stop mysql_container || true
           sudo docker rm mysql_container || true
-          sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -v mysql_data:/var/lib/mysql -p 21212:3306 \$IMAGE  # 수정된 부분: 포트를 명확하게 지정
+          sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -v mysql_data:/var/lib/mysql -v /path/to/init.sql:/docker-entrypoint-initdb.d/init.sql -p 21212:3306 \$IMAGE  # 수정된 부분: 볼륨 마운트 경로 추가
         EOF
 
     - name: Clean up old images
