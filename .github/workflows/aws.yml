@@ -58,12 +58,12 @@ jobs:
       env:
         IMAGE: ${{ steps.build-image.outputs.image }}
       run: |
-        ssh -o StrictHostKeyChecking=no $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
+        ssh -o StrictHostKeyChecking=no -t $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
           IMAGE=${IMAGE}
           sudo docker pull \$IMAGE
           sudo docker stop mysql_container || true
           sudo docker rm mysql_container || true
-          sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -v mysql_data:/var/lib/mysql -p 3306:3306 \$IMAGE
+          sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -v mysql_data:/var/lib/mysql -p 21212:3306 \$IMAGE  # 수정된 부분: 포트를 명확하게 지정
         EOF
 
     - name: Clean up old images
