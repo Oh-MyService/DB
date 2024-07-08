@@ -58,12 +58,13 @@ jobs:
       env:
         IMAGE: ${{ steps.build-image.outputs.image }}
       run: |
+        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./init.sql $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP:/home/$SSH_USERNAME/init.sql
         ssh -o StrictHostKeyChecking=no -t $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
           IMAGE=${IMAGE}
           sudo docker pull \$IMAGE
           sudo docker stop mysql_container || true
           sudo docker rm mysql_container || true
-          sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -v mysql_data:/var/lib/mysql -v /path/to/init.sql:/docker-entrypoint-initdb.d/init.sql -p 21212:3306 \$IMAGE  # 수정된 부분: 볼륨 마운트 경로 추가
+          sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -v mysql_data:/var/lib/mysql -v /home/$SSH_USERNAME/init.sql:/docker-entrypoint-initdb.d/init.sql -p 21212:3306 \$IMAGE
         EOF
 
     - name: Clean up old images
