@@ -46,3 +46,7 @@ CREATE TABLE collections (
     CONSTRAINT fk_collection_result FOREIGN KEY (result_id) REFERENCES results(id) ON DELETE CASCADE,
     CONSTRAINT fk_collection_prompt FOREIGN KEY (prompt_id) REFERENCES prompts(id) ON DELETE CASCADE
 );
+
+CREATE TABLE ttttttttttest(
+    collection_id INT
+)
