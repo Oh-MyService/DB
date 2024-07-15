@@ -1,14 +1,14 @@
 -- Drop and recreate the database
-DROP DATABASE IF EXISTS my_database;
-CREATE DATABASE my_database;
-USE my_database;
+DROP DATABASE IF EXISTS ohmyservice_database;
+CREATE DATABASE ohmyservice_database;
+USE ohmyservice_database;
 
 -- Create users table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    profileimg VARCHAR(255),
+    profileimg VARCHAR(255) NULL,
     INDEX (id)
 );
 
@@ -37,12 +37,19 @@ CREATE TABLE results (
 -- Create collections table
 CREATE TABLE collections (
     collection_id INT AUTO_INCREMENT PRIMARY KEY,
-    created_at DATETIME,
-    user_id INT,
-    result_id INT,
-    prompt_id INT,
+    created_at DATETIME NULL,
+    user_id INT NULL,
+    collection_name VARCHAR(255) NULL,
     INDEX (collection_id),
-    CONSTRAINT fk_collection_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_collection_result FOREIGN KEY (result_id) REFERENCES results(id) ON DELETE CASCADE,
-    CONSTRAINT fk_collection_prompt FOREIGN KEY (prompt_id) REFERENCES prompts(id) ON DELETE CASCADE
+    CONSTRAINT fk_collection_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create collection_results table
+CREATE TABLE collection_results (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    collection_id INT NULL,
+    result_id INT NULL,
+    INDEX (id),
+    CONSTRAINT fk_collection FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE,
+    CONSTRAINT fk_result FOREIGN KEY (result_id) REFERENCES results(id) ON DELETE CASCADE
 );
