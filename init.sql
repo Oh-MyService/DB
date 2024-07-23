@@ -3,6 +3,10 @@ DROP DATABASE IF EXISTS ohmyservice_database;
 CREATE DATABASE ohmyservice_database;
 USE ohmyservice_database;
 
+-- google test
+CREATE DATABASE google_database;
+
+
 -- Create users table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
