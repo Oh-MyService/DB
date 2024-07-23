@@ -1,11 +1,11 @@
--- Drop and recreate the database
-DROP DATABASE IF EXISTS ohmyservice_database;
-CREATE DATABASE ohmyservice_database;
-USE ohmyservice_database;
 
 -- google test
 CREATE DATABASE google_database;
 
+-- Drop and recreate the database
+DROP DATABASE IF EXISTS ohmyservice_database;
+CREATE DATABASE ohmyservice_database;
+USE ohmyservice_database;
 
 -- Create users table
 CREATE TABLE users (
