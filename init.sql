@@ -1,4 +1,5 @@
 -- google test
+DROP DATABASE IF EXISTS google_database;
 CREATE DATABASE google_database;
 
 -- Drop and recreate the database
