@@ -1,4 +1,3 @@
-
 -- google test
 CREATE DATABASE google_database;
 
@@ -10,9 +9,8 @@ USE ohmyservice_database;
 -- Create users table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    profileimg VARCHAR(255) NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     INDEX (id)
 );
 
