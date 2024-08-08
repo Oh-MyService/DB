@@ -39,11 +39,11 @@ CREATE TABLE results (
 
 -- Create collections table
 CREATE TABLE collections (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    collection_id INT AUTO_INCREMENT PRIMARY KEY,
+    created_at DATETIME NOT NULL,
     user_id INT NOT NULL,
-    INDEX (id),
-    CONSTRAINT fk_collection_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    collection_name VARCHAR(255) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- Create collection_results table
