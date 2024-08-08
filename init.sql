@@ -28,31 +28,31 @@ CREATE TABLE prompts (
 -- Create results table
 CREATE TABLE results (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    prompt_id INT NOT NULL,
-    user_id INT NOT NULL,
-    image_data LONGBLOB NOT NULL,
     created_at DATETIME NOT NULL,
+    image_data LONGBLOB NOT NULL,
+    user_id INT NOT NULL,
+    prompt_id INT NOT NULL,
     INDEX (id),
-    CONSTRAINT fk_result_prompt FOREIGN KEY (prompt_id) REFERENCES prompts(id),
-    CONSTRAINT fk_result_user FOREIGN KEY (user_id) REFERENCES users(id)
+    CONSTRAINT fk_result_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_result_prompt FOREIGN KEY (prompt_id) REFERENCES prompts(id) ON DELETE SET NULL
 );
 
 -- Create collections table
 CREATE TABLE collections (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    collection_name VARCHAR(255) NOT NULL,
-    created_at DATETIME NOT NULL,
-    INDEX (id),
-    CONSTRAINT fk_collection_user FOREIGN KEY (user_id) REFERENCES users(id)
+    collection_id INT AUTO_INCREMENT PRIMARY KEY,
+    created_at DATETIME NULL,
+    user_id INT NULL,
+    collection_name VARCHAR(255) NULL,
+    INDEX (collection_id),
+    CONSTRAINT fk_collection_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Create collection_results table
 CREATE TABLE collection_results (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    collection_id INT NOT NULL,
-    result_id INT NOT NULL,
+    collection_id INT NULL,
+    result_id INT NULL,
     INDEX (id),
-    CONSTRAINT fk_collection_result_collection FOREIGN KEY (collection_id) REFERENCES collections(id),
-    CONSTRAINT fk_collection_result_result FOREIGN KEY (result_id) REFERENCES results(id)
+    CONSTRAINT fk_collection FOREIGN KEY (collection_id) REFERENCES collections(collection_id),
+    CONSTRAINT fk_result FOREIGN KEY (result_id) REFERENCES results(id) ON DELETE SET NULL
 );
