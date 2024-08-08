@@ -39,18 +39,18 @@ CREATE TABLE results (
 
 -- Create collections table
 CREATE TABLE collections (
-    collection_id INT AUTO_INCREMENT PRIMARY KEY,
-    created_at DATETIME NOT NULL,
-    user_id INT NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     collection_name VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    user_id INT NOT NULL,
+    INDEX (id),
+    CONSTRAINT fk_collection_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Create collection_results table
+-- Create collection_result table
 CREATE TABLE collection_result (
     collection_id INT NOT NULL,
     result_id INT NOT NULL,
     PRIMARY KEY (collection_id, result_id),
     CONSTRAINT fk_collection FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
-    CONSTRAINT fk_result FOREIGN KEY (result_id) REFERENCES results(id)
+    CONSTRAINT fk_result FOREIGN KEY (result_id) REFERENCES results(id) ON DELETE NO ACTION
 );
