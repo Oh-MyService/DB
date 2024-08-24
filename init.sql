@@ -20,6 +20,7 @@ CREATE TABLE prompts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     created_at DATETIME NOT NULL,
     content VARCHAR(255) NOT NULL,
+    ai_option JSON NULL,
     user_id INT NOT NULL,
     INDEX (id),
     CONSTRAINT fk_prompt_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
