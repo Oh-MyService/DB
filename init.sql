@@ -30,7 +30,7 @@ CREATE TABLE prompts (
 CREATE TABLE results (
     id INT AUTO_INCREMENT PRIMARY KEY,
     created_at DATETIME NOT NULL,
-    image_data LONGBLOB NOT NULL,
+    image_data VARCHAR(500) NOT NULL,
     user_id INT NOT NULL,
     prompt_id INT NOT NULL,
     INDEX (id),
