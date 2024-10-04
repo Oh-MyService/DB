@@ -54,7 +54,7 @@ jobs:
         docker pull ${{ steps.build-image.outputs.image }}
         docker stop mysql_container || true
         docker rm mysql_container || true
-        docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=my_database -v mysql_data:/var/lib/mysql -p 21212:3306 ${{ steps.build-image.outputs.image }}
+        docker run -d --name mysql_container -v mysql_data:/var/lib/mysql -p 21212:3306 ${{ steps.build-image.outputs.image }}
         sleep 10
         docker cp /home/${{ secrets.SSH_USERNAME }}/init.sql mysql_container:/docker-entrypoint-initdb.d/
         docker exec -i mysql_container sh -c 'exec mysql -uroot -proot < /docker-entrypoint-initdb.d/init.sql'
