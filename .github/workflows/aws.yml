@@ -48,17 +48,12 @@ jobs:
     - name: Install SSH client
       run: sudo apt-get install -y openssh-client
 
-    - name: Copy SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-
     - name: Deploy to Amazon Lightsail
       env:
         IMAGE: ${{ steps.build-image.outputs.image }}
       run: |
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./init.sql $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP:/home/$SSH_USERNAME/init.sql
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
+        scp -o StrictHostKeyChecking=no -i ~/./init.sql $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP:/home/$SSH_USERNAME/init.sql
         ssh -o StrictHostKeyChecking=no -t $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
           IMAGE=${IMAGE}
           sudo docker pull \$IMAGE
