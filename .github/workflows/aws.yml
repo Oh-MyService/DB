@@ -8,7 +8,7 @@ env:
   AWS_REGION: us-east-1
   LIGHTSAIL_INSTANCE_IP: ${{ secrets.LIGHTSAIL_INSTANCE_IP }}
   SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
 
 jobs:
   deploy:
@@ -46,32 +46,29 @@ jobs:
         echo "image=$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Install SSH client
-      run: sudo apt-get install -y openssh-client
+      run: sudo apt-get install -y openssh-client sshpass
 
-    - name: Copy SSH key
+    - name: Create deployment script
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+        echo "
+        docker pull ${{ steps.build-image.outputs.image }}
+        docker stop mysql_container || true
+        docker rm mysql_container || true
+        docker run -d --name mysql_container -v mysql_data:/var/lib/mysql -p 21212:3306 ${{ steps.build-image.outputs.image }}
+        sleep 10
+        docker cp /home/${{ secrets.SSH_USERNAME }}/init.sql mysql_container:/docker-entrypoint-initdb.d/
+        docker exec -i mysql_container sh -c 'exec mysql -uroot -proot < /docker-entrypoint-initdb.d/init.sql'
+        " > deploy_script.sh
 
-    - name: Deploy to Amazon Lightsail
-      env:
-        IMAGE: ${{ steps.build-image.outputs.image }}
+    - name: Copy init.sql and deployment script to Lightsail instance
       run: |
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./init.sql $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP:/home/$SSH_USERNAME/init.sql
-        ssh -o StrictHostKeyChecking=no -t $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
-          IMAGE=${IMAGE}
-          sudo docker pull \$IMAGE
-          sudo docker stop mysql_container || true
-          sudo docker rm mysql_container || true
-          sudo docker run -d --name mysql_container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=my_database -v mysql_data:/var/lib/mysql -p 21212:3306 \$IMAGE
-          sleep 10  # 컨테이너가 시작될 시간을 줌
-          sudo docker cp /home/$SSH_USERNAME/init.sql mysql_container:/docker-entrypoint-initdb.d/
-          sudo docker exec -i mysql_container sh -c 'exec mysql -uroot -proot < /docker-entrypoint-initdb.d/init.sql'
-        EOF
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./init.sql ${{ secrets.SSH_USERNAME }}@${{ secrets.LIGHTSAIL_INSTANCE_IP }}:/home/${{ secrets.SSH_USERNAME }}/init.sql
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./deploy_script.sh ${{ secrets.SSH_USERNAME }}@${{ secrets.LIGHTSAIL_INSTANCE_IP }}:/home/${{ secrets.SSH_USERNAME }}/deploy_script.sh
 
-    - name: Clean up old images
+    - name: Run deployment script on Lightsail instance
       run: |
-        ssh -o StrictHostKeyChecking=no -t $SSH_USERNAME@$LIGHTSAIL_INSTANCE_IP << EOF
-          sudo docker image prune -f
-        EOF
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.LIGHTSAIL_INSTANCE_IP }} 'bash /home/${{ secrets.SSH_USERNAME }}/deploy_script.sh'
+
+    - name: Clean up old images on Lightsail
+      run: |
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.LIGHTSAIL_INSTANCE_IP }} 'sudo docker image prune -f'
