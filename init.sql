@@ -20,7 +20,7 @@ CREATE TABLE users (
 CREATE TABLE prompts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     created_at DATETIME NOT NULL,
-    content VARCHAR(255) NOT NULL,
+    content JSON NOT NULL,
     ai_option JSON NULL,
     task_id VARCHAR(255) NULL,
     user_id INT NOT NULL,
