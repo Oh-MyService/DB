@@ -13,6 +13,8 @@ CREATE TABLE users (
     username VARCHAR(255) NOT NULL UNIQUE,
     hashed_password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    reset_token VARCHAR(255) NULL, -- 비밀번호 재설정 토큰 추가
+    reset_token_expires DATETIME NULL, -- 토큰 만료 시간 추가
     INDEX (id)
 );
 
